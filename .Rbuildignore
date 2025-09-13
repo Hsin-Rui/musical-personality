@@ -1,0 +1,4 @@
+^renv$
+^renv\.lock$
+^musical\.personality\.Rproj$
+^\.Rproj\.user$
