@@ -225,3 +225,45 @@ create_table_A7.1 <- function(){
   reorder_items(bif.coef)
 
 }
+
+#' Create table 8.1
+#'
+#' @importFrom BifactorIndicesCalculator bifactorIndices
+#' @importFrom stringr str_remove
+#'
+create_table_8.1 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_full_sample.rds")
+
+  # make the bifactor calculator quiet:
+  null_device <- if (Sys.info()['sysname'] == "Windows") "NUL" else "/dev/null"
+
+  # sink to redirect output
+  sink(null_device)
+  result <- BifactorIndicesCalculator::bifactorIndices(models$model_1, UniLambda = models$model_2)
+  sink()
+
+  result <- result$FactorLevelIndices
+  result <- result[,c(-1,-3)]
+  result$FD_squared <- result$FD * result$FD
+  result$FD_worst_cor <- 2 * result$FD_squared - 1
+  result <- round(result, digits = 3)
+
+  for (i in 1:ncol(result)) {
+
+    result[,i] <- stringr::str_remove(as.character(result[,i]), "^0")
+
+  }
+
+  result %>%
+    dplyr::select(
+      Omega,
+      OmegaH,
+      ECV_SG,
+      H,
+      FD,
+      FD_squared,
+      FD_worst_cor
+    )
+
+}

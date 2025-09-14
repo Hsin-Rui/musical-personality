@@ -248,8 +248,10 @@ run_bifactor_model_full_sample <- function(save_model = FALSE){
   model_spec <- c(rep(1,12),rep(2,10))
   set.seed(1235)
   fit1 <- mirt::bfactor(df, model=model_spec, itemtype = itemtype)
+  set.seed(1235)
+  fit2 <- mirt::mirt(df, 1, technical = list(NCYCLES=2000))
 
-  result <- list(model_1 = fit1)
+  result <- list(model_1 = fit1, model_2 = fit2)
 
   if (isTRUE(save_model)) {
     saveRDS(result, "inst/models/model_bifactor_full_sample.rds")
