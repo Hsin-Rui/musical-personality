@@ -4,13 +4,15 @@
 \alias{report_loadings}
 \title{Report factor loadings from an mirt model object}
 \usage{
-report_loadings(model)
+report_loadings(model, surpress_small_loadings = TRUE)
 }
 \arguments{
 \item{model}{an MIRT model object returned by mirt::mirt()}
+
+\item{surpress_small_loadings}{if FALSE, all loadings will be reported. Otherwise, loadings <.30 are surpressed.}
 }
 \value{
-a data frame with factor loadings & h2. Loadings under .30 are surpressed. Character strings are reported (instead of numeric values)
+a data frame with factor loadings & h2. Default setting: Loadings under .30 are surpressed. Character strings are reported (instead of numeric values)
 }
 \description{
 Report factor loadings from an mirt model object

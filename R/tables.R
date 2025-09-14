@@ -268,7 +268,7 @@ create_table_8.1 <- function(){
 
 }
 
-#' Create table 8.1
+#' Create table 8.2
 #'
 create_table_8.2 <- function(){
 
@@ -324,6 +324,8 @@ create_table_8.2 <- function(){
 
 }
 
+#' Create table 8.3
+#'
 create_table_8.3 <- function() {
 
   D1 <- c("AG_Teilnahme", #1
