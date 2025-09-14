@@ -63,16 +63,7 @@ create_figure_7.3 <- function(save_file = FALSE) {
 
   eigendat <- rbind(obs,sim)
 
-  apatheme=ggplot2::theme_bw()+
-    ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank(),
-          panel.background = ggplot2::element_blank(),
-          panel.border = ggplot2::element_blank(),
-          text=ggplot2::element_text(family='sans'),
-          legend.title=ggplot2::element_blank(),
-          legend.position=c(.7,.8),
-          axis.line.x = ggplot2::element_line(color='black'),
-          axis.line.y = ggplot2::element_line(color='black'))
+  apatheme <- get_apatheme()
 
   p <- ggplot2::ggplot(eigendat, ggplot2::aes(x=num,y=eigenvalue, shape=type))+
     ggplot2::geom_line()+
@@ -88,6 +79,121 @@ create_figure_7.3 <- function(save_file = FALSE) {
   if (isTRUE(save_file)) {
 
     ggplot2::ggsave("inst/output/Abbildung7.3.pdf", plot = p, dpi = 300, width = 5, height = 5)
+
+  }
+
+  p
+
+}
+
+#' Create figure 8.1
+#'
+#' @param save_file if TRUE, a pdf file is generated. File name: Abbildung8.1.pdf
+#'
+#' @import ggplot2
+#' @import ggpubr
+#'
+
+create_figure_8.1 <- function(save_file){
+
+  scores <- readRDS("inst/scores/scores_t1.rds")$EAP_score
+  apatheme <-get_apatheme()
+
+  p1 <-
+    ggplot2::ggplot(scores, ggplot2::aes(x=G))+
+    ggplot2::ggtitle("(a) Generelle Teilhabe")+
+    ggplot2::geom_histogram(colour="black", fill="grey", bins = 30)+
+    ggplot2::scale_x_continuous(name = "")+
+    ggplot2::scale_y_continuous("Häufigkeit")+
+    apatheme
+
+  p2 <-
+    ggplot2::ggplot(scores, ggplot2::aes(x=S1))+
+    ggplot2::ggtitle("(b) Teilhabe im formalen Kontext")+
+    ggplot2::geom_histogram(colour="black", fill="grey", bins = 30)+
+    ggplot2::scale_x_continuous(name = "Theta")+
+    ggplot2::scale_y_continuous("")+
+    apatheme
+
+  p3 <- ggplot2::ggplot(scores, aes(x=S2))+
+    ggplot2::ggtitle("(c) Teilhabe im informellen Kontext")+
+    ggplot2::geom_histogram(colour="black", fill="grey", bins = 30)+
+    ggplot2::scale_x_continuous(name = "Theta")+
+    ggplot2::scale_y_continuous("Häufigkeit")+
+    apatheme
+
+  p <- ggpubr::ggarrange(p1, p2, p3, ncol=2,nrow=2)
+
+  if (isTRUE(save_file)) {
+
+    ggplot2::ggsave("inst/output/Abbildung8.1.pdf", plot = p, dpi = 300, width = 8, height = 6)
+
+  }
+
+  p
+
+}
+
+#' Create figure 8.2
+#'
+#' @param save_file if TRUE, a pdf file is generated. File name: Abbildung8.1.pdf
+#'
+#' @import ggplot2
+#' @import ggpubr
+#' @import ggExtra
+#'
+create_figure_8.2 <- function(save_file) {
+
+  scores <- readRDS("inst/scores/scores_t1.rds")
+
+  EAP_scores <- data.frame(scores$EAP_score)
+  apatheme <- get_apatheme()
+
+  library(ggExtra)
+  library(ggplot2)
+
+  p1 <-
+    ggplot2::ggplot(EAP_scores, ggplot2::aes(x=G, y=SE_G))+
+    ggplot2::geom_point(alpha=0.05)+
+    ggplot2::geom_smooth(colour="black", se=FALSE, linewidth=0.7)+
+    ggplot2::ggtitle("(a) Generelle Teilhabe")+
+    ggplot2::scale_x_continuous(name = "", breaks = c(-2,-1,0,1,2))+
+    ggplot2::scale_y_continuous("Standardfehler", limits = c(0,1))+
+    apatheme +
+    ggplot2::theme(plot.title = ggplot2::element_text(vjust = -0.2))
+
+  p1 <- ggExtra::ggMarginal(p1, type = "histogram", fill="grey")
+
+  p2 <-
+    ggplot2::ggplot(EAP_scores, ggplot2::aes(x=S1, y=SE_S1))+
+    ggplot2::geom_point(alpha=0.05)+
+    ggplot2::geom_smooth(colour="black", se=FALSE, linewidth=0.7)+
+    ggplot2::ggtitle("(b) Teilhabe im formalen Kontext")+
+    ggplot2::scale_x_continuous(name = "Theta", breaks = c(-2,-1,0,1,2))+
+    ggplot2::scale_y_continuous("", limits = c(0,1))+
+    apatheme+
+    ggplot2::theme(plot.title = ggplot2::element_text(vjust = -0.2))
+
+  p2 <- ggExtra::ggMarginal(p2, type = "histogram", fill="grey")
+
+
+  p3 <-
+    ggplot2::ggplot(EAP_scores, ggplot2::aes(x=S2, y=SE_S2))+
+    ggplot2::geom_point(alpha=0.05)+
+    ggplot2::geom_smooth(colour="black", se=FALSE, size=0.7)+
+    ggplot2::ggtitle("(c) Teilhabe im informellen Kontext")+
+    ggplot2::scale_x_continuous(name = "Theta", breaks = c(-2,-1,0,1,2))+
+    ggplot2::scale_y_continuous("Standardfehler", limits = c(0,1))+
+    apatheme+
+    ggplot2::theme(plot.title = ggplot2::element_text(vjust = -0.2))
+
+  p3 <- ggExtra::ggMarginal(p3, type = "histogram", fill="grey")
+
+  p <- ggpubr::ggarrange(p1, p2, p3, ncol=2,nrow=2)
+
+  if (isTRUE(save_file)) {
+
+    ggplot2::ggsave("inst/output/Abbildung8.2.pdf", plot = p, dpi = 300, width = 8, height = 6.5)
 
   }
 

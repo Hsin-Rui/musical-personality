@@ -161,3 +161,23 @@ calculate_factore_score <- function(model, save_scores = FALSE){
   return(result)
 
 }
+
+#' GGplot2 theme for apa style
+#'
+#' @import ggplot2
+get_apatheme <- function(){
+
+  apatheme <- ggplot2::theme_bw()+
+    ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_blank(),
+                   panel.border = ggplot2::element_blank(),
+                   text=ggplot2::element_text(family='sans'),
+                   legend.title=ggplot2::element_blank(),
+                   legend.position=c(.7,.8),
+                   axis.line.x = ggplot2::element_line(color='black'),
+                   axis.line.y = ggplot2::element_line(color='black'))
+
+  return(apatheme)
+
+}
