@@ -268,14 +268,58 @@ create_table_8.1 <- function(){
 
 }
 
+#' Create table 8.1
+#'
 create_table_8.2 <- function(){
 
-  models <- readRDS("inst/models/model_bifactor_full_sample.rds")
+  scores <- readRDS("inst/scores/scores_t1.rds")
 
-  set.seed(123465)
-  scores_EAP_error <- mirt::fscores(models$model_1, full.scores.SE = TRUE)
+  EAP_scores <- data.frame(scores$EAP_score)
+  MAP_scores <- data.frame(scores$MAP_score)
 
-  set.seed(123465)
-  scores_MAR_error <- mirt::fscores(models$model_1, method = "MAP", full.scores.SE = TRUE, QMC = TRUE)
+  scores_mean <- c(round(mean(EAP_scores$G), digits = 3),
+    round(mean(EAP_scores$S1), digits = 3),
+    round(mean(EAP_scores$S2), digits = 3),
+    round(mean(MAP_scores$G), digits = 3),
+    round(mean(MAP_scores$S1), digits = 3),
+    round(mean(MAP_scores$S2), digits = 3))
+
+  scores_sd <- c(round(sd(EAP_scores$G), digits = 3),
+                 round(sd(EAP_scores$S1), digits = 3),
+                 round(sd(EAP_scores$S2), digits = 3),
+                 round(sd(MAP_scores$G), digits = 3),
+                 round(sd(MAP_scores$S1), digits = 3),
+                 round(sd(MAP_scores$S2), digits = 3))
+
+  min_se <- c(round(min(EAP_scores$SE_G), digits = 3),
+              round(min(EAP_scores$SE_S1), digits = 3),
+              round(min(EAP_scores$SE_S2), digits = 3),
+              round(min(MAP_scores$SE_G), digits = 3),
+              round(min(MAP_scores$SE_S1), digits = 3),
+              round(min(MAP_scores$SE_S2), digits = 3))
+
+  max_se <- c(round(max(EAP_scores$SE_G), digits = 3),
+              round(max(EAP_scores$SE_S1), digits = 3),
+              round(max(EAP_scores$SE_S2), digits = 3),
+              round(max(MAP_scores$SE_G), digits = 3),
+              round(max(MAP_scores$SE_S1), digits = 3),
+              round(max(MAP_scores$SE_S2), digits = 3))
+
+  er <- round(c(scores$EAP_reliability, scores$MAR_reliability), digits = 3)
+
+  result <- data.frame(M = scores_mean,
+             SD = scores_sd,
+             Min.SE = min_se,
+             Max.SE = max_se,
+             ER = er)
+
+  row.names(result) <- c("FG (EAP)",
+                         "F1 (EAP)",
+                         "F2 (EAP)",
+                         "FG (MAP)",
+                         "F1 (MAP)",
+                         "F2 (MAP)")
+
+  return(result)
 
 }
