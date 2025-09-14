@@ -259,3 +259,51 @@ run_bifactor_model_full_sample <- function(save_model = FALSE){
 
   return(result)
 }
+
+#' Run bifactor model with t2 sample
+#'
+#' @param save_model if TRUE, then the results are saved under inst/models. File name: model_bifactor_t2_sample.rds
+#'
+#' @importFrom mirt bfactor
+#' @return a list of model objects returned by mirt::bfactor()
+#'
+run_bifactor_model_t2 <- function(save_model = FALSE){
+
+  df <- readRDS("inst/df_t2.rds")
+
+  model_spec <- c(rep(1,12),rep(2,10))
+  itemtype <- c("2PL", #1
+                "2PL", #2
+                "graded", #3
+                "graded", #4
+                "2PL", #5
+                "2PL", #6
+                "2PL", #7
+                "2PL", #8
+                "2PL", #9
+                "2PL", #10
+                "2PL", #11
+                "2PL", #12
+                "graded", #13
+                "graded", #14
+                "graded", #15
+                "graded", #16
+                "graded", #17
+                "graded", #18
+                "graded", #19
+                "graded", #20
+                "graded", #21
+                "graded") #22
+
+  set.seed(1235)
+  fit1 <- bfactor(df, model=model_spec, itemtype = itemtype)
+
+  result <- list(model_1 = fit1)
+
+  if (isTRUE(save_model)) {
+    saveRDS(result, "inst/models/model_bifactor_t2_sample.rds")
+  }
+
+  return(result)
+
+}
