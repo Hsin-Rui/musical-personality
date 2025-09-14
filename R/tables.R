@@ -115,3 +115,23 @@ create_table_7.15 <- function(){
   return(result)
 
 }
+
+#' Create table 7.16
+#'
+create_table_7.16 <- function(){
+
+  models <- readRDS("inst/models/models_22items.rds")
+
+  report_loadings(models$model_2)
+
+}
+
+#' Create table 7.17
+#'
+create_table_7.17 <- function(){
+
+  models <- readRDS("inst/models/models_22items.rds")
+
+  report_item_fit(models$model_2)
+
+}
