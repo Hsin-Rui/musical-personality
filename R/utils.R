@@ -60,16 +60,7 @@ report_loadings <- function(model){
   result <- data.frame(sum_model$rotF, sum_model$h2)
   result <- round(result, digits = 3)
 
-  new_order <-
-    c("Profilklasse",
-    "AG_Teilnahme",
-    row.names(result)[stringr::str_detect(row.names(result), "KV")],
-    row.names(result)[stringr::str_detect(row.names(result), "MA02")],
-    row.names(result)[stringr::str_detect(row.names(result), "IU01")],
-    row.names(result)[stringr::str_detect(row.names(result), "MA01")],
-    row.names(result)[stringr::str_detect(row.names(result), "IM01")])
-
-  result <- result[new_order,]
+  result <- reorder_items(result)
 
   for (i in 1:ncol(result)) {
     result[,i] <- dplyr::coalesce(as.character(result[,i]), "")
@@ -77,5 +68,32 @@ report_loadings <- function(model){
   }
 
   result
+
+}
+
+#' Reorder items according to the reports in the manuscript
+#'
+#' @param df a data frame with row.names which are the item ids
+#'
+reorder_items <- function(df){
+
+  KV <- row.names(df)[stringr::str_detect(row.names(df), "KV")]
+  MA02 <- row.names(df)[stringr::str_detect(row.names(df), "MA02")]
+  MA01 <- row.names(df)[stringr::str_detect(row.names(df), "MA01")]
+  MA01 <- MA01[order(MA01)]
+  IM01 <- row.names(df)[stringr::str_detect(row.names(df), "IM01")]
+
+  new_order <-
+    c("AG_Teilnahme",
+      "Profilklasse",
+      KV,
+      MA02,
+      "IU01",
+      MA01,
+      IM01)
+
+  df <- df[new_order,]
+
+  return(df)
 
 }
