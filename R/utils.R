@@ -12,11 +12,10 @@
 
 get_fit_index <- function(x, model_name="model") {
 
-
   AIC <- round(mirt::extract.mirt(x, "AIC"),2)
   BIC <- round(mirt::extract.mirt(x, "BIC"),2)
   LL <- round(mirt::extract.mirt(x, "logLik"),2)
-  M2_fit <- mirt::M2(x, type = "M2*", na.rm=TRUE)
+  M2_fit <- mirt::M2(x, type = "M2*")
   M_squared <- round(M2_fit$M2, 2)
   SRMR <- stringr::str_remove(as.character(round(M2_fit$SRMSR, 3)), "^0")
   sum_x <- mirt::summary(x, verbose = FALSE)
@@ -224,3 +223,38 @@ report_bifactor_reliability <- function(models){
 
 }
 
+#' Report fit indices for state invariance models
+#'
+#' @param x a model object
+#' @param model_name string of model name (for better output)
+#'
+#' @importFrom mirt extract.mirt
+#' @importFrom mirt M2
+#'
+
+get_fit_index_invariance_state <- function(x, model_name="model") {
+
+  AIC <- round(mirt::extract.mirt(x, "AIC"),2)
+  BIC <- round(mirt::extract.mirt(x, "BIC"),2)
+  LL <- round(mirt::extract.mirt(x, "logLik"),2)
+  M2_fit <- mirt::M2(x, type = "M2*")
+  M_squared <- round(M2_fit$M2, 2)
+  SRMSR.RLP <- round(M2_fit$SRMSR.RLP, 3)
+  SRMSR.SH.NS <- round(M2_fit$SRMSR.SH.NS, 3)
+  RMSEA <- M2_fit$RMSEA
+  CFI <- M2_fit$CFI
+
+  res <- data.frame(Modell = model_name,
+                    LL = LL,
+                    M2 = M_squared,
+                    df = M2_fit$df,
+                    p = M2_fit$p,
+                    SRMR.RLP = SRMSR.RLP,
+                    SRMR.SH.NS = SRMSR.SH.NS,
+                    RMSEA = RMSEA,
+                    CFI = CFI,
+                    AIC = AIC,
+                    BIC = BIC)
+
+  return (res)
+}

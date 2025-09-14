@@ -406,3 +406,39 @@ create_table_8.8 <- function(){
   round(cor_matrix, digits = 3)
 
 }
+
+create_table_8.13 <- function() {
+
+  models <- readRDS("inst/models/models_state_invariance.rds")
+
+  result <- get_fit_index_invariance_state(models$model_configural, "konfigurale Invarianz")
+  result <- rbind(result, get_fit_index_invariance_state(models$model_slope, model_name = "metrische Invarianz"))
+  result <- rbind(result, get_fit_index_invariance_state(models$model_full, model_name = "skalare Invarianz"))
+
+  result[,2:ncol(result)] <- round(result[,2:ncol(result)],3)
+
+  result <-result %>%
+    dplyr::mutate(delta_M2 = M2-dplyr::lag(M2),
+                  delta_df = df-dplyr::lag(df),
+                  delta_RMSEA = RMSEA-lag(RMSEA),
+                  delta_CFI = dplyr::lag(CFI)-CFI) %>%
+    dplyr::relocate(delta_M2, delta_df, .before = SRMR.RLP) %>%
+    dplyr::relocate(delta_RMSEA, .before=CFI) %>%
+    dplyr::relocate(delta_CFI, .before=AIC)
+
+  model_names <- result$Modell
+  result <- data.frame(t(result[,2:ncol(result)]))
+  names(result) <- model_names
+
+  for (i in 1:ncol(result)){
+
+    result[,i] <- dplyr::coalesce(as.character(result[,i]), "")
+    result[,i] <- stringr::str_replace(result[,i], "^0\\.", "\\.")
+
+  }
+
+  result[result=="0"] <- "<.001"
+  result[result==""] <- "-"
+  result
+
+}
