@@ -133,10 +133,11 @@ report_item_fit <- function(model){
 #' Calculate factor scores from a model object
 #'
 #' @param model an MIRT model object
-#' @param save_scores if TRUE, scores will be saved under inst/scores, file name: scores_t1.rds
+#' @param save_scores if TRUE, scores will be saved under inst/scores
+#' @param path the rds file saved
 #' @importFrom mirt fscores
 #'
-calculate_factore_score <- function(model, save_scores = FALSE){
+calculate_factore_score <- function(model, save_scores = FALSE, path="inst/scores/scores_t1.rds"){
 
   set.seed(123465)
   scores_EAP_error <- mirt::fscores(model, full.scores.SE = TRUE)
@@ -154,7 +155,7 @@ calculate_factore_score <- function(model, save_scores = FALSE){
 
   if(isTRUE(save_scores)) {
 
-    saveRDS(result, "inst/scores/scores_t1.rds")
+    saveRDS(result, path)
 
   }
 
@@ -222,3 +223,4 @@ report_bifactor_reliability <- function(models){
     )
 
 }
+

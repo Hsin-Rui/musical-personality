@@ -388,3 +388,21 @@ create_table_8.7 <- function(){
   report_bifactor_reliability(models = models)
 
 }
+
+#' Create table 8.8
+#'
+create_table_8.8 <- function(){
+
+  scores <- readRDS("inst/scores/scores_t2.rds")
+
+  EAP_scores <- data.frame(scores$EAP_score)
+
+  EAP_scores <- EAP_scores[,c(1:3)]
+
+  cor_matrix <- cor(EAP_scores)
+
+  cor_matrix[cor_matrix == 1] <- scores$EAP_reliability
+
+  round(cor_matrix, digits = 3)
+
+}
