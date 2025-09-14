@@ -5,6 +5,7 @@
 #' @importFrom mirt extract.mirt
 #' @importFrom mirt M2
 #' @importFrom mirt summary
+#' @importFrom stringr str_remove
 #'
 #' @return a data frame with all fit index
 #'
