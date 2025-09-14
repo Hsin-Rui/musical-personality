@@ -188,4 +188,72 @@ run_confirmatory_mirt_22items <- function(save_model = FALSE) {
   return(result)
 }
 
+#' Run bifactor model with whole sample
+#'
+#' @param save_model if TRUE, then the results are saved under inst/models. File name: model_bifactor_full_sample.rds
+#'
+#' @importFrom mirt bfactor
+#' @return a list of model objects returned by mirt::bfactor()
+#'
+run_bifactor_model_full_sample <- function(save_model = FALSE){
 
+  df <- readRDS("inst/df_t1.rds")
+
+  D1 <- c("AG_Teilnahme", #1
+          "Profilklasse", #2
+          "IU01", #3
+          "MA01_01", #4
+          "KV01_02", #5
+          "KV01_03", #6
+          "KV01_04", #7
+          "KV01_05", #8
+          "MA02_01", #9
+          "MA02_03", #10
+          "MA02_04", #11
+          "MA02_05") #12
+  D2 <- c("MA01_02", #13
+          "MA01_03", #14
+          "MA01_04", #15
+          "MA01_05", #16
+          "MA01_07", #17
+          "MA01_09", #18
+          "MA01_10", #19
+          "IM01_01", #20
+          "IM01_02", #21
+          "IM01_05") #22
+  itemtype <- c("2PL", #1
+                     "2PL", #2
+                     "graded", #3
+                     "graded", #4
+                     "2PL", #5
+                     "2PL", #6
+                     "2PL", #7
+                     "2PL", #8
+                     "2PL", #9
+                     "2PL", #10
+                     "2PL", #11
+                     "2PL", #12
+                     "graded", #13
+                     "graded", #14
+                     "graded", #15
+                     "graded", #16
+                     "graded", #17
+                     "graded", #18
+                     "graded", #19
+                     "graded", #20
+                     "graded", #21
+                     "graded") #22
+
+  df <- df [,c(D1,D2)]
+  model_spec <- c(rep(1,12),rep(2,10))
+  set.seed(1235)
+  fit1 <- mirt::bfactor(df, model=model_spec, itemtype = itemtype)
+
+  result <- list(model_1 = fit1)
+
+  if (isTRUE(save_model)) {
+    saveRDS(result, "inst/models/model_bifactor_full_sample.rds")
+  }
+
+  return(result)
+}

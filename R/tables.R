@@ -135,3 +135,79 @@ create_table_7.17 <- function(){
   report_item_fit(models$model_2)
 
 }
+
+#' Create table 7.18
+#'
+create_table_7.18 <- function(){
+
+  models <- readRDS("inst/models/models_confirmatory.rds")
+
+  result <- get_fit_index(models$model_1, model_name = "1-faktoriell")
+  result <- rbind(result, get_fit_index(models$model_2, model_name = "2-faktoriell"))
+  result <- rbind(result, get_fit_index(models$model_3, model_name = "bifaktoriell"))
+
+  return(result)
+
+}
+
+#' Create table 7.19
+#'
+create_table_7.19 <- function(){
+
+  models <- readRDS("inst/models/models_confirmatory.rds")
+
+  report_loadings(models$model_2, surpress_small_loadings = FALSE)
+
+}
+
+#' Create table 7.20
+#'
+create_table_7.20 <- function(){
+
+  models <- readRDS("inst/models/models_confirmatory.rds")
+
+  report_loadings(models$model_3, surpress_small_loadings = FALSE)
+
+}
+
+#' Create table 7.21
+#'
+create_table_7.21 <- function(){
+
+  models <- readRDS("inst/models/models_confirmatory.rds")
+
+  report_item_fit(models$model_3)
+
+}
+
+#' Create table 7.22
+#'
+create_table_7.22 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_full_sample.rds")
+
+  result <- get_fit_index(models$model_1, model_name = "bifaktoriell")
+
+  return(result)
+
+}
+
+#' Create table 7.23
+#'
+create_table_7.23 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_full_sample.rds")
+
+  report_loadings(models$model_1, surpress_small_loadings = FALSE)
+
+}
+
+#' Create table 7.24
+#'
+create_table_7.24 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_full_sample.rds")
+
+  report_item_fit(models$model_1)
+
+}

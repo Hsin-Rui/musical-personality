@@ -44,18 +44,22 @@ get_fit_index <- function(x, model_name="model") {
 #' Report factor loadings from an mirt model object
 #'
 #' @param model an MIRT model object returned by mirt::mirt()
+#' @param surpress_small_loadings if FALSE, all loadings will be reported. Otherwise, loadings <.30 are surpressed.
 #'
 #' @importFrom mirt summary
 #' @importFrom stringr str_replace
 #' @importFrom dplyr coalesce
 #'
-#' @return a data frame with factor loadings & h2. Loadings under .30 are surpressed. Character strings are reported (instead of numeric values)
+#' @return a data frame with factor loadings & h2. Default setting: Loadings under .30 are surpressed. Character strings are reported (instead of numeric values)
 #'
 
-report_loadings <- function(model){
+report_loadings <- function(model, surpress_small_loadings = TRUE){
 
   sum_model  <- mirt::summary(model, verbose = FALSE)
-  sum_model$rotF [abs(sum_model$rotF) < 0.3] <- NA
+
+  if (isTRUE(surpress_small_loadings)){
+    sum_model$rotF [abs(sum_model$rotF) < 0.3] <- NA
+  }
   result <- data.frame(sum_model$rotF, sum_model$h2)
   result <- round(result, digits = 3)
 
