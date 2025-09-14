@@ -40,3 +40,42 @@ get_fit_index <- function(x, model_name="model") {
 
   return (res)
 }
+
+#' Report factor loadings from an mirt model object
+#'
+#' @param model an MIRT model object returned by mirt::mirt()
+#'
+#' @importFrom mirt summary
+#' @importFrom stringr str_detect
+#' @importFrom stringr str_replace
+#' @importFrom dplyr coalesce
+#'
+#' @return a data frame with factor loadings & h2. Loadings under .30 are surpressed. Character strings are reported (instead of numeric values)
+#'
+
+report_loadings <- function(model){
+
+  sum_model  <- mirt::summary(model, verbose = FALSE)
+  sum_model$rotF [abs(sum_model$rotF) < 0.3] <- NA
+  result <- data.frame(sum_model$rotF, sum_model$h2)
+  result <- round(result, digits = 3)
+
+  new_order <-
+    c("Profilklasse",
+    "AG_Teilnahme",
+    row.names(result)[stringr::str_detect(row.names(result), "KV")],
+    row.names(result)[stringr::str_detect(row.names(result), "MA02")],
+    row.names(result)[stringr::str_detect(row.names(result), "IU01")],
+    row.names(result)[stringr::str_detect(row.names(result), "MA01")],
+    row.names(result)[stringr::str_detect(row.names(result), "IM01")])
+
+  result <- result[new_order,]
+
+  for (i in 1:ncol(result)) {
+    result[,i] <- dplyr::coalesce(as.character(result[,i]), "")
+    result[,i] <- stringr::str_replace(result[,i], "0\\.", "\\.")
+  }
+
+  result
+
+}
