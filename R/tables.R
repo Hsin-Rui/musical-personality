@@ -86,3 +86,9 @@ create_table_7.11 <- function(){
   result
 
 }
+
+#' Create table 7.12
+#'
+create_table_7.12 <- function(){
+
+}
