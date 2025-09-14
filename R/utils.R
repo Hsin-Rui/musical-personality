@@ -40,26 +40,3 @@ get_fit_index <- function(x, model_name="model") {
 
   return (res)
 }
-
-
-
-save_graph_pdf <- function(path, plot, width=2160, height=2016) {
-
-  # 1. Calculate the dimensions in inches
-  width_in_inches <- 2160 / 300
-  height_in_inches <- 2160 / 300
-
-  # 2. Open the PDF graphics device with the desired filename and dimensions
-  pdf(path, width = width_in_inches, height = height_in_inches)
-
-  # 3. Create plot
-  #    All plotting commands from here on will be written to the PDF file.
-  plot
-
-  # 4. Close the device to save the file
-  #    This is a crucial step!
-  dev.off()
-
-}
-
-
