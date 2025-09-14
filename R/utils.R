@@ -46,7 +46,6 @@ get_fit_index <- function(x, model_name="model") {
 #' @param model an MIRT model object returned by mirt::mirt()
 #'
 #' @importFrom mirt summary
-#' @importFrom stringr str_detect
 #' @importFrom stringr str_replace
 #' @importFrom dplyr coalesce
 #'
@@ -75,6 +74,8 @@ report_loadings <- function(model){
 #'
 #' @param df a data frame with row.names which are the item ids
 #'
+#' @importFrom stringr str_detect
+
 reorder_items <- function(df){
 
   KV <- row.names(df)[stringr::str_detect(row.names(df), "KV")]
@@ -96,4 +97,32 @@ reorder_items <- function(df){
 
   return(df)
 
+}
+#' Report item fit index from an mirt model object
+#'
+#' @param model an MIRT model object returned by mirt::mirt()
+#' @importFrom mirt itemfit
+#' @importFrom dplyr select
+#' @importFrom stringr str_replace
+
+report_item_fit <- function(model){
+
+  result <- mirt::itemfit(model, na.rm = TRUE) #complete dataset (N=1332)
+  row.names(result) <- result$item
+
+  result <- reorder_items(result)
+
+  result <- result %>%
+    dplyr::select(-item)
+
+  result <-round(result, digits=3)
+
+  for (i in 1:ncol(result)){
+
+    result[,i] <- stringr::str_replace(as.character(result[,i]), "^0\\.", "\\.")
+
+  }
+
+  result[result=="0"] <- "<.001"
+  return(result)
 }
