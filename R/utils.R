@@ -130,3 +130,34 @@ report_item_fit <- function(model){
   result[result=="0"] <- "<.001"
   return(result)
 }
+#' Calculate factor scores from a model object
+#'
+#' @param model an MIRT model object
+#' @param save_scores if TRUE, scores will be saved under inst/scores, file name: scores_t1.rds
+#' @importFrom mirt fscores
+#'
+calculate_factore_score <- function(model, save_scores = FALSE){
+
+  set.seed(123465)
+  scores_EAP_error <- mirt::fscores(model, full.scores.SE = TRUE)
+
+  set.seed(123465)
+  scores_MAR_error <- mirt::fscores(model, method = "MAP", full.scores.SE = TRUE, QMC = TRUE)
+
+  set.seed(123465)
+  EAP_reliability <- mirt::fscores(model, full.scores.SE = TRUE, returnER = TRUE)
+
+  set.seed(123465)
+  MAR_reliability <- mirt::fscores(model, method = "MAP", full.scores.SE = TRUE, QMC = TRUE, returnER = TRUE)
+
+  result <- list(EAP_score = scores_EAP_error, MAP_score = scores_MAR_error, EAP_reliability = EAP_reliability, MAR_reliability = MAR_reliability)
+
+  if(isTRUE(save_scores)) {
+
+    saveRDS(result, "inst/scores/scores_t1.rds")
+
+  }
+
+  return(result)
+
+}

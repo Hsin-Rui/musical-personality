@@ -267,3 +267,15 @@ create_table_8.1 <- function(){
     )
 
 }
+
+create_table_8.2 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_full_sample.rds")
+
+  set.seed(123465)
+  scores_EAP_error <- mirt::fscores(models$model_1, full.scores.SE = TRUE)
+
+  set.seed(123465)
+  scores_MAR_error <- mirt::fscores(models$model_1, method = "MAP", full.scores.SE = TRUE, QMC = TRUE)
+
+}
