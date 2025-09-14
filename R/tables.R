@@ -323,3 +323,54 @@ create_table_8.2 <- function(){
   return(result)
 
 }
+
+create_table_8.3 <- function() {
+
+  D1 <- c("AG_Teilnahme", #1
+          "Profilklasse", #2
+          "IU01", #3
+          "MA01_01", #4
+          "KV01_02", #5
+          "KV01_03", #6
+          "KV01_04", #7
+          "KV01_05", #8
+          "MA02_01", #9
+          "MA02_03", #10
+          "MA02_04", #11
+          "MA02_05") #12
+  D2 <- c("MA01_02", #13
+          "MA01_03", #14
+          "MA01_04", #15
+          "MA01_05", #16
+          "MA01_07", #17
+          "MA01_09", #18
+          "MA01_10", #19
+          "IM01_01", #20
+          "IM01_02", #21
+          "IM01_05") #22
+
+  scores <- readRDS("inst/scores/scores_t1.rds")
+  df <- readRDS("inst/df_t1.rds")
+
+  df <- df [,c(D1, D2)]
+
+  n_items <- 22-rowSums(is.na(df))
+  n_items_D1 <- 12-rowSums(is.na(df[,D1]))
+  n_items_D2 <- 10-rowSums(is.na(df[,D2]))
+  FG_sum <- rowSums(df[,c(D1,D2)], na.rm = TRUE)/n_items
+  F1_sum <- rowSums(df[,D1], na.rm = TRUE)/n_items_D1
+  F2_sum <- rowSums(df[,D2], na.rm = TRUE)/n_items_D2
+
+  scores_sum <- data.frame(FG_sum = FG_sum, F1_sum = F1_sum, F2_sum = F2_sum)
+
+  scores_EAP <- data.frame(scores$EAP_score)[,c(1:3)]
+  names(scores_EAP) <- c("FG (EAP)", "F1 (EAP)", "F2 (EAP)")
+
+  scores_MAP <- data.frame(scores$MAP_score)[,c(1:3)]
+  names(scores_MAP) <- c("FG (MAP)", "F1 (MAP)", "F2 (MAP)")
+
+  cor_matrix <- cor(cbind(scores_EAP, scores_MAP, scores_sum))
+
+  round(cor_matrix, digits = 2)
+
+}
