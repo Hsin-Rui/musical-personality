@@ -211,3 +211,17 @@ create_table_7.24 <- function(){
   report_item_fit(models$model_1)
 
 }
+
+#' Create table A7.1
+#'
+create_table_A7.1 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_full_sample.rds")
+
+  bif.coef <- mirt::coef(models$model_1, simplify=T)
+  bif.coef <- bif.coef$items
+  bif.coef <- round(bif.coef, digits=3)
+
+  reorder_items(bif.coef)
+
+}
