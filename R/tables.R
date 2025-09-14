@@ -235,36 +235,7 @@ create_table_8.1 <- function(){
 
   models <- readRDS("inst/models/model_bifactor_full_sample.rds")
 
-  # make the bifactor calculator quiet:
-  null_device <- if (Sys.info()['sysname'] == "Windows") "NUL" else "/dev/null"
-
-  # sink to redirect output
-  sink(null_device)
-  result <- BifactorIndicesCalculator::bifactorIndices(models$model_1, UniLambda = models$model_2)
-  sink()
-
-  result <- result$FactorLevelIndices
-  result <- result[,c(-1,-3)]
-  result$FD_squared <- result$FD * result$FD
-  result$FD_worst_cor <- 2 * result$FD_squared - 1
-  result <- round(result, digits = 3)
-
-  for (i in 1:ncol(result)) {
-
-    result[,i] <- stringr::str_remove(as.character(result[,i]), "^0")
-
-  }
-
-  result %>%
-    dplyr::select(
-      Omega,
-      OmegaH,
-      ECV_SG,
-      H,
-      FD,
-      FD_squared,
-      FD_worst_cor
-    )
+  report_bifactor_reliability(models = models)
 
 }
 
@@ -374,5 +345,46 @@ create_table_8.3 <- function() {
   cor_matrix <- cor(cbind(scores_EAP, scores_MAP, scores_sum))
 
   round(cor_matrix, digits = 2)
+
+}
+
+#' Create table 8.4
+#'
+create_table_8.4 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_t2_sample.rds")
+
+  result <- get_fit_index(models$model_1, model_name = "bifaktoriell")
+
+  return(result)
+}
+
+#' Create table 8.5
+#'
+create_table_8.5 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_t2_sample.rds")
+
+  report_loadings(models$model_1, surpress_small_loadings = FALSE)
+
+}
+
+#' Create table 8.6
+#'
+create_table_8.6 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_t2_sample.rds")
+
+  report_item_fit(models$model_1)
+
+}
+
+#' Create table 8.7
+#'
+create_table_8.7 <- function(){
+
+  models <- readRDS("inst/models/model_bifactor_t2_sample.rds")
+
+  report_bifactor_reliability(models = models)
 
 }

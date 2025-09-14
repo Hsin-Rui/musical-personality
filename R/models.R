@@ -265,6 +265,7 @@ run_bifactor_model_full_sample <- function(save_model = FALSE){
 #' @param save_model if TRUE, then the results are saved under inst/models. File name: model_bifactor_t2_sample.rds
 #'
 #' @importFrom mirt bfactor
+#' @importFrom mirt mirt
 #' @return a list of model objects returned by mirt::bfactor()
 #'
 run_bifactor_model_t2 <- function(save_model = FALSE){
@@ -297,8 +298,10 @@ run_bifactor_model_t2 <- function(save_model = FALSE){
 
   set.seed(1235)
   fit1 <- bfactor(df, model=model_spec, itemtype = itemtype)
+  set.seed(1235)
+  fit2 <- mirt::mirt(df, 1, technical = list(NCYCLES=2000))
 
-  result <- list(model_1 = fit1)
+  result <- list(model_1 = fit1, model_2 = fit2)
 
   if (isTRUE(save_model)) {
     saveRDS(result, "inst/models/model_bifactor_t2_sample.rds")

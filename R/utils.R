@@ -181,3 +181,44 @@ get_apatheme <- function(){
   return(apatheme)
 
 }
+
+#' Report bifactor model based reliability
+#'
+#' @param models a list of models. model_1 is the bifactor model, model_2 is the one factorial solution (base line model)
+#' @importFrom BifactorIndicesCalculator bifactorIndices
+#'
+
+report_bifactor_reliability <- function(models){
+
+  # make the bifactor calculator quiet:
+  null_device <- if (Sys.info()['sysname'] == "Windows") "NUL" else "/dev/null"
+
+  # sink to redirect output
+  sink(null_device)
+  result <- BifactorIndicesCalculator::bifactorIndices(models$model_1, UniLambda = models$model_2)
+  sink()
+
+  result <- result$FactorLevelIndices
+  result <- result[,c(-1,-3)]
+  result$FD_squared <- result$FD * result$FD
+  result$FD_worst_cor <- 2 * result$FD_squared - 1
+  result <- round(result, digits = 3)
+
+  for (i in 1:ncol(result)) {
+
+    result[,i] <- stringr::str_remove(as.character(result[,i]), "^0")
+
+  }
+
+  result %>%
+    dplyr::select(
+      Omega,
+      OmegaH,
+      ECV_SG,
+      H,
+      FD,
+      FD_squared,
+      FD_worst_cor
+    )
+
+}
