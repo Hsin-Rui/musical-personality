@@ -136,7 +136,7 @@ create_figure_8.1 <- function(save_file=FALSE){
 
 #' Create figure 8.2
 #'
-#' @param save_file if TRUE, a pdf file is generated. File name: Abbildung8.1.pdf
+#' @param save_file if TRUE, a pdf file is generated. File name: Abbildung8.2.pdf
 #'
 #' @import ggplot2
 #' @import ggpubr
@@ -201,35 +201,47 @@ create_figure_8.2 <- function(save_file=FALSE) {
 
 }
 
-create_figure_8.3 <- function(){
+#' Create figure 8.3
+#'
+#' @param save_file if TRUE, a pdf file is generated. File name: Abbildung8.3.pdf
+#'
+#' @import ggplot2
+#' @import ggpubr
+#' @importFrom psych cohen.d
+#' @importFrom mirt fscores
+#'
+
+create_figure_8.3 <- function(save_file=FALSE){
 
   scores_whole_sample <- readRDS("inst/scores/scores_t1.rds")
   models <- readRDS("inst/models/models_state_invariance.rds")
   BD <- readRDS("inst/BD.rds")
+  BD <- factor(BD, levels=c("RLP", "SH/NS"), labels=c("Rheinland-Pfalz", "Schleswig-Holstein/Niedersachsen"))
 
-  mirt::fscores(models$model_full)
+  set.seed(12345)
+  scores_full_invariance <- mirt::fscores(models$model_full)
+  scores_full_invariance <- data.frame(scores_full_invariance)
+  scores_full_invariance$Bundesland <- BD
+  scores_full_invariance$Modell <- "Mehrgruppen"
 
+  scores_whole_sample <-scores_whole_sample$EAP_score[,c(1:3)]
+  scores_whole_sample <- data.frame(scores_whole_sample)
+  scores_whole_sample$Bundesland <- BD
+  scores_whole_sample$Modell <- "Einzelgruppe"
 
-  scores.BD <- fscores(bif.groupBD)
-  scores.BD <- data.frame(scores.BD)
-  scores.BD$Bundesland <- BD
-  scores.BD$Modell <- "Mehrgruppen"
+  d1_G <- psych::cohen.d(scores_whole_sample$G, scores_whole_sample$Bundesland)
+  d1_G <- round(abs(d1_G[[1]][2]), digits = 2)
+  d2_G <- psych::cohen.d(scores_full_invariance$G, scores_full_invariance$Bundesland)
+  d2_G <- round(abs(d2_G[[1]][2]), digits = 2)
 
-  scores.bif <- fscores(fit.bif2)
-  scores.bif <- data.frame(scores.bif)
-  scores.bif$Bundesland <- BD
-  scores.bif$Modell <- "Einzelgruppe"
+  scores <- rbind(scores_whole_sample, scores_full_invariance)
 
-  d1.G <- cohen.d(scores.bif$G, scores.bif$Bundesland)
-  d1.G <- round(abs(d1.G[[1]][2]), digits = 2)
-  d2.G <- cohen.d(scores.BD$G, scores.BD$Bundesland)
-  d2.G <- round(abs(d2.G[[1]][2]), digits = 2)
-
-  scores.BD.compare <- rbind(scores.bif,scores.BD)
-  BD.G <- scores.BD.compare %>%
+  p1 <-
+    scores %>%
     ggplot(aes(x=Modell,y=G,fill=Bundesland))+
     geom_boxplot()+
     ylab("Theta")+
+    xlab("")+
     scale_y_continuous(limits=c(-2.5,3),breaks = c(-2,-1,0,1,2))+
     scale_fill_brewer(palette = "Pastel1")+
     theme_classic()+
@@ -237,15 +249,15 @@ create_figure_8.3 <- function(){
     annotate("text", x=1,y=2.8,label="italic(d)==0.01",parse=TRUE)+
     annotate("text", x=2,y=2.8,label="italic(d)==0.02",parse=TRUE)
 
-  d1.S1 <- cohen.d(scores.bif$S1, scores.bif$Bundesland)
-  d1.S1 <- round(abs(d1.S1[[1]][2]), digits = 2)
-  d2.S1 <- cohen.d(scores.BD$S1, scores.BD$Bundesland)
-  d2.S1 <- round(abs(d2.S1[[1]][2]), digits = 2)
+  d1_S1 <- psych::cohen.d(scores_whole_sample$S1, scores_whole_sample$Bundesland)
+  d1_S1 <- round(abs(d1_S1[[1]][2]), digits = 2)
+  d2_S1 <- psych::cohen.d(scores_full_invariance$S1, scores_full_invariance$Bundesland)
+  d2_S1 <- round(abs(d2_S1[[1]][2]), digits = 2)
 
-  BD.S1 <- scores.BD.compare %>%
+  p2 <- scores %>%
     ggplot(aes(x=Modell,y=S1,fill=Bundesland))+
     geom_boxplot()+
-    ylab("Theta")+
+    ylab("")+
     scale_y_continuous(limits=c(-2.5,3),breaks = c(-2,-1,0,1,2))+
     scale_fill_brewer(palette = "Pastel1")+
     theme_classic()+
@@ -253,12 +265,12 @@ create_figure_8.3 <- function(){
     annotate("text", x=1,y=2.8,label="italic(d)==0.06",parse=TRUE)+
     annotate("text", x=2,y=2.8,label="italic(d)==0.06",parse=TRUE)
 
-  d1.S2 <- cohen.d(scores.bif$S2, scores.bif$Bundesland)
-  d1.S2 <- round(abs(d1.S2[[1]][2]), digits = 2)
-  d2.S2 <- cohen.d(scores.BD$S2, scores.BD$Bundesland)
-  d2.S2 <- round(abs(d2.S2[[1]][2]), digits = 2)
+  d1_S2 <- psych::cohen.d(scores_whole_sample$S2, scores_whole_sample$Bundesland)
+  d1_S2 <- round(abs(d1_S2[[1]][2]), digits = 2)
+  d2_S2 <- psych::cohen.d(scores_full_invariance$S2, scores_full_invariance$Bundesland)
+  d2_S2 <- round(abs(d2_S2[[1]][2]), digits = 2)
 
-  BD.S2 <- scores.BD.compare %>%
+  p3 <- scores %>%
     ggplot(aes(x=Modell,y=S2,fill=Bundesland))+
     geom_boxplot()+
     ylab("Theta")+
@@ -269,10 +281,14 @@ create_figure_8.3 <- function(){
     annotate("text", x=1,y=2.8,label="italic(d)==0.14",parse=TRUE)+
     annotate("text", x=2,y=2.8,label="italic(d)==0.14",parse=TRUE)
 
-  score.BD.plot <- ggpubr::ggarrange(BD.G, BD.S1, BD.S2, ncol=2,nrow=2,common.legend = TRUE, legend= "bottom")
-  score.BD.plot
-  ggsave(here("results/2021-02-02-score.BD.plot.jpeg"), width=9, height=7.5, unit='in', dpi=300)
+  p <- ggpubr::ggarrange(p1, p2, p3, ncol=2,nrow=2,common.legend = TRUE, legend= "bottom")
 
+  if (isTRUE(save_file)) {
 
+    ggplot2::ggsave("inst/output/Abbildung8.3.pdf", plot = p, dpi = 300, width = 9, height = 7.5)
+
+  }
+
+  p
 
 }
