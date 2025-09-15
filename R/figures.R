@@ -94,7 +94,7 @@ create_figure_7.3 <- function(save_file = FALSE) {
 #' @import ggpubr
 #'
 
-create_figure_8.1 <- function(save_file){
+create_figure_8.1 <- function(save_file=FALSE){
 
   scores <- readRDS("inst/scores/scores_t1.rds")$EAP_score
   apatheme <-get_apatheme()
@@ -142,7 +142,7 @@ create_figure_8.1 <- function(save_file){
 #' @import ggpubr
 #' @import ggExtra
 #'
-create_figure_8.2 <- function(save_file) {
+create_figure_8.2 <- function(save_file=FALSE) {
 
   scores <- readRDS("inst/scores/scores_t1.rds")
 
@@ -198,5 +198,81 @@ create_figure_8.2 <- function(save_file) {
   }
 
   p
+
+}
+
+create_figure_8.3 <- function(){
+
+  scores_whole_sample <- readRDS("inst/scores/scores_t1.rds")
+  models <- readRDS("inst/models/models_state_invariance.rds")
+  BD <- readRDS("inst/BD.rds")
+
+  mirt::fscores(models$model_full)
+
+
+  scores.BD <- fscores(bif.groupBD)
+  scores.BD <- data.frame(scores.BD)
+  scores.BD$Bundesland <- BD
+  scores.BD$Modell <- "Mehrgruppen"
+
+  scores.bif <- fscores(fit.bif2)
+  scores.bif <- data.frame(scores.bif)
+  scores.bif$Bundesland <- BD
+  scores.bif$Modell <- "Einzelgruppe"
+
+  d1.G <- cohen.d(scores.bif$G, scores.bif$Bundesland)
+  d1.G <- round(abs(d1.G[[1]][2]), digits = 2)
+  d2.G <- cohen.d(scores.BD$G, scores.BD$Bundesland)
+  d2.G <- round(abs(d2.G[[1]][2]), digits = 2)
+
+  scores.BD.compare <- rbind(scores.bif,scores.BD)
+  BD.G <- scores.BD.compare %>%
+    ggplot(aes(x=Modell,y=G,fill=Bundesland))+
+    geom_boxplot()+
+    ylab("Theta")+
+    scale_y_continuous(limits=c(-2.5,3),breaks = c(-2,-1,0,1,2))+
+    scale_fill_brewer(palette = "Pastel1")+
+    theme_classic()+
+    ggtitle("FG: Generelle Teilhabe")+
+    annotate("text", x=1,y=2.8,label="italic(d)==0.01",parse=TRUE)+
+    annotate("text", x=2,y=2.8,label="italic(d)==0.02",parse=TRUE)
+
+  d1.S1 <- cohen.d(scores.bif$S1, scores.bif$Bundesland)
+  d1.S1 <- round(abs(d1.S1[[1]][2]), digits = 2)
+  d2.S1 <- cohen.d(scores.BD$S1, scores.BD$Bundesland)
+  d2.S1 <- round(abs(d2.S1[[1]][2]), digits = 2)
+
+  BD.S1 <- scores.BD.compare %>%
+    ggplot(aes(x=Modell,y=S1,fill=Bundesland))+
+    geom_boxplot()+
+    ylab("Theta")+
+    scale_y_continuous(limits=c(-2.5,3),breaks = c(-2,-1,0,1,2))+
+    scale_fill_brewer(palette = "Pastel1")+
+    theme_classic()+
+    ggtitle("F1: Teilhabe im formalen Kontext")+
+    annotate("text", x=1,y=2.8,label="italic(d)==0.06",parse=TRUE)+
+    annotate("text", x=2,y=2.8,label="italic(d)==0.06",parse=TRUE)
+
+  d1.S2 <- cohen.d(scores.bif$S2, scores.bif$Bundesland)
+  d1.S2 <- round(abs(d1.S2[[1]][2]), digits = 2)
+  d2.S2 <- cohen.d(scores.BD$S2, scores.BD$Bundesland)
+  d2.S2 <- round(abs(d2.S2[[1]][2]), digits = 2)
+
+  BD.S2 <- scores.BD.compare %>%
+    ggplot(aes(x=Modell,y=S2,fill=Bundesland))+
+    geom_boxplot()+
+    ylab("Theta")+
+    scale_y_continuous(limits=c(-2.5,3),breaks = c(-2,-1,0,1,2))+
+    scale_fill_brewer(palette = "Pastel1")+
+    theme_classic()+
+    ggtitle("F2: Teilhabe im informellen Kontext")+
+    annotate("text", x=1,y=2.8,label="italic(d)==0.14",parse=TRUE)+
+    annotate("text", x=2,y=2.8,label="italic(d)==0.14",parse=TRUE)
+
+  score.BD.plot <- ggpubr::ggarrange(BD.G, BD.S1, BD.S2, ncol=2,nrow=2,common.legend = TRUE, legend= "bottom")
+  score.BD.plot
+  ggsave(here("results/2021-02-02-score.BD.plot.jpeg"), width=9, height=7.5, unit='in', dpi=300)
+
+
 
 }

@@ -406,7 +406,10 @@ create_table_8.8 <- function(){
   round(cor_matrix, digits = 3)
 
 }
-
+#' Create table 8.13
+#'
+#' @import dplyr
+#'
 create_table_8.13 <- function() {
 
   models <- readRDS("inst/models/models_state_invariance.rds")
