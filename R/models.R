@@ -622,3 +622,93 @@ run_measurement_invariance_gender <- function(save_model = FALSE){
   return(result)
 
 }
+
+
+
+#' Run DIF analysis for gender
+#'
+#' @importFrom mirt bfactor
+#' @importFrom mirt mirt
+#' @return a vector of item names (DIF items)
+#'
+
+run_dif_analysis_gender <- function(){
+
+  D1 <- c("AG_Teilnahme", #1
+          "Profilklasse", #2
+          "IU01", #3
+          "MA01_01", #4
+          "KV01_02", #5
+          "KV01_03", #6
+          "KV01_04", #7
+          "KV01_05", #8
+          "MA02_01", #9
+          "MA02_03", #10
+          "MA02_04", #11
+          "MA02_05") #12
+  D2 <- c("MA01_02", #13
+          "MA01_03", #14
+          "MA01_04", #15
+          "MA01_05", #16
+          "MA01_07", #17
+          "MA01_09", #18
+          "MA01_10", #19
+          "IM01_01", #20
+          "IM01_02", #21
+          "IM01_05") #22
+  items <- c(D1,D2)
+
+  model_spec <- c(rep(1,12),rep(2,10))
+  itemtype <- c("2PL", #1
+                "2PL", #2
+                "graded", #3
+                "graded", #4
+                "2PL", #5
+                "2PL", #6
+                "2PL", #7
+                "2PL", #8
+                "2PL", #9
+                "2PL", #10
+                "2PL", #11
+                "2PL", #12
+                "graded", #13
+                "graded", #14
+                "graded", #15
+                "graded", #16
+                "graded", #17
+                "graded", #18
+                "graded", #19
+                "graded", #20
+                "graded", #21
+                "graded") #22
+
+  spec_inv <- c(items,"free_var","free_means")
+
+  df <- readRDS("inst/df_t1.rds")
+  df <- df[,items]
+  gender <- readRDS("inst/gender.rds")
+
+  df <- df[!is.na(gender),]
+  gender <- gender[!is.na(gender)]
+
+  models <- readRDS("inst/models/models_gender_invariance.rds")
+  fit1 <- models$model_full # base line model: assume full invariance
+  # values <- mirt::bfactor(df, model=model_spec, itemtype = itemtype, group= BD, invariance = spec_inv, pars="values")
+
+  res_DIF <- rep(TRUE, length(items))
+  names(res_DIF) <- items
+
+  for (i in 1:length(items)){
+
+    spec_inv <- c(items[-i], "free_var","free_means") # release constraints of individual items and then compare fit
+    set.seed(123456)
+    fit_DIF <- mirt::bfactor(df, model=model_spec, itemtype = itemtype, group= gender,invariance=spec_inv)
+    res_anova <- mirt::anova(fit1, fit_DIF)
+    res <- res_anova$p [2] < 0.005 # single criteria
+    res_DIF[i] <- res
+
+  }
+
+  return(names(res_DIF)[res_DIF])
+
+}

@@ -206,8 +206,6 @@ create_figure_8.2 <- function(save_file=FALSE) {
 #' @param save_file if TRUE, a pdf file is generated. File name: Abbildung8.3.pdf
 #'
 #' @import ggplot2
-#' @import ggpubr
-#' @importFrom psych cohen.d
 #' @importFrom mirt fscores
 #'
 
@@ -216,72 +214,9 @@ create_figure_8.3 <- function(save_file=FALSE){
   scores_whole_sample <- readRDS("inst/scores/scores_t1.rds")
   models <- readRDS("inst/models/models_state_invariance.rds")
   BD <- readRDS("inst/BD.rds")
-  BD <- factor(BD, levels=c("RLP", "SH/NS"), labels=c("Rheinland-Pfalz", "Schleswig-Holstein/Niedersachsen"))
+  group <- factor(BD, levels=c("RLP", "SH/NS"), labels=c("Rheinland-Pfalz", "Schleswig-Holstein/Niedersachsen"))
 
-  set.seed(12345)
-  scores_full_invariance <- mirt::fscores(models$model_full)
-  scores_full_invariance <- data.frame(scores_full_invariance)
-  scores_full_invariance$Bundesland <- BD
-  scores_full_invariance$Modell <- "Mehrgruppen"
-
-  scores_whole_sample <-scores_whole_sample$EAP_score[,c(1:3)]
-  scores_whole_sample <- data.frame(scores_whole_sample)
-  scores_whole_sample$Bundesland <- BD
-  scores_whole_sample$Modell <- "Einzelgruppe"
-
-  d1_G <- psych::cohen.d(scores_whole_sample$G, scores_whole_sample$Bundesland)
-  d1_G <- round(abs(d1_G[[1]][2]), digits = 2)
-  d2_G <- psych::cohen.d(scores_full_invariance$G, scores_full_invariance$Bundesland)
-  d2_G <- round(abs(d2_G[[1]][2]), digits = 2)
-
-  scores <- rbind(scores_whole_sample, scores_full_invariance)
-
-  p1 <-
-    scores %>%
-    ggplot(aes(x=Modell,y=G,fill=Bundesland))+
-    geom_boxplot()+
-    ylab("Theta")+
-    xlab("")+
-    scale_y_continuous(limits=c(-2.5,3),breaks = c(-2,-1,0,1,2))+
-    scale_fill_brewer(palette = "Pastel1")+
-    theme_classic()+
-    ggtitle("FG: Generelle Teilhabe")+
-    annotate("text", x=1,y=2.8,label="italic(d)==0.01",parse=TRUE)+
-    annotate("text", x=2,y=2.8,label="italic(d)==0.02",parse=TRUE)
-
-  d1_S1 <- psych::cohen.d(scores_whole_sample$S1, scores_whole_sample$Bundesland)
-  d1_S1 <- round(abs(d1_S1[[1]][2]), digits = 2)
-  d2_S1 <- psych::cohen.d(scores_full_invariance$S1, scores_full_invariance$Bundesland)
-  d2_S1 <- round(abs(d2_S1[[1]][2]), digits = 2)
-
-  p2 <- scores %>%
-    ggplot(aes(x=Modell,y=S1,fill=Bundesland))+
-    geom_boxplot()+
-    ylab("")+
-    scale_y_continuous(limits=c(-2.5,3),breaks = c(-2,-1,0,1,2))+
-    scale_fill_brewer(palette = "Pastel1")+
-    theme_classic()+
-    ggtitle("F1: Teilhabe im formalen Kontext")+
-    annotate("text", x=1,y=2.8,label="italic(d)==0.06",parse=TRUE)+
-    annotate("text", x=2,y=2.8,label="italic(d)==0.06",parse=TRUE)
-
-  d1_S2 <- psych::cohen.d(scores_whole_sample$S2, scores_whole_sample$Bundesland)
-  d1_S2 <- round(abs(d1_S2[[1]][2]), digits = 2)
-  d2_S2 <- psych::cohen.d(scores_full_invariance$S2, scores_full_invariance$Bundesland)
-  d2_S2 <- round(abs(d2_S2[[1]][2]), digits = 2)
-
-  p3 <- scores %>%
-    ggplot(aes(x=Modell,y=S2,fill=Bundesland))+
-    geom_boxplot()+
-    ylab("Theta")+
-    scale_y_continuous(limits=c(-2.5,3),breaks = c(-2,-1,0,1,2))+
-    scale_fill_brewer(palette = "Pastel1")+
-    theme_classic()+
-    ggtitle("F2: Teilhabe im informellen Kontext")+
-    annotate("text", x=1,y=2.8,label="italic(d)==0.14",parse=TRUE)+
-    annotate("text", x=2,y=2.8,label="italic(d)==0.14",parse=TRUE)
-
-  p <- ggpubr::ggarrange(p1, p2, p3, ncol=2,nrow=2,common.legend = TRUE, legend= "bottom")
+  p <- plot_multigroup_scores_distribution(models, scores_whole_sample, group)
 
   if (isTRUE(save_file)) {
 
@@ -292,3 +227,30 @@ create_figure_8.3 <- function(save_file=FALSE){
   p
 
 }
+
+#' Create figure 8.4
+#'
+#' @param save_file if TRUE, a pdf file is generated. File name: Abbildung8.4.pdf
+#'
+#' @import ggplot2
+#' @importFrom mirt fscores
+#'
+
+create_figure_8.4 <- function(save_file=FALSE){
+
+  scores_whole_sample <- readRDS("inst/scores/scores_t1.rds")
+  models <- readRDS("inst/models/models_gender_invariance.rds")
+  group <- readRDS("inst/gender.rds")
+
+  p <- plot_multigroup_scores_distribution(models, scores_whole_sample, group)
+
+  if (isTRUE(save_file)) {
+
+    ggplot2::ggsave("inst/output/Abbildung8.4.pdf", plot = p, dpi = 300, width = 9, height = 7.5)
+
+  }
+
+  p
+
+}
+
