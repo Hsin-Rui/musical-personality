@@ -103,7 +103,7 @@ create_figure_8.1 <- function(save_file=FALSE){
     ggplot2::ggplot(scores, ggplot2::aes(x=G))+
     ggplot2::ggtitle("(a) Generelle Teilhabe")+
     ggplot2::geom_histogram(colour="black", fill="grey", bins = 30)+
-    ggplot2::scale_x_continuous(name = "")+
+    ggplot2::scale_x_continuous(name = "Theta")+
     ggplot2::scale_y_continuous("Häufigkeit")+
     apatheme
 
@@ -112,7 +112,7 @@ create_figure_8.1 <- function(save_file=FALSE){
     ggplot2::ggtitle("(b) Teilhabe im formalen Kontext")+
     ggplot2::geom_histogram(colour="black", fill="grey", bins = 30)+
     ggplot2::scale_x_continuous(name = "Theta")+
-    ggplot2::scale_y_continuous("")+
+    ggplot2::scale_y_continuous("Häufigkeit")+
     apatheme
 
   p3 <- ggplot2::ggplot(scores, aes(x=S2))+
@@ -157,7 +157,7 @@ create_figure_8.2 <- function(save_file=FALSE) {
     ggplot2::geom_point(alpha=0.05)+
     ggplot2::geom_smooth(colour="black", se=FALSE, linewidth=0.7)+
     ggplot2::ggtitle("(a) Generelle Teilhabe")+
-    ggplot2::scale_x_continuous(name = "", breaks = c(-2,-1,0,1,2))+
+    ggplot2::scale_x_continuous(name = "Theta", breaks = c(-2,-1,0,1,2))+
     ggplot2::scale_y_continuous("Standardfehler", limits = c(0,1))+
     apatheme +
     ggplot2::theme(plot.title = ggplot2::element_text(vjust = -0.2))
@@ -170,7 +170,7 @@ create_figure_8.2 <- function(save_file=FALSE) {
     ggplot2::geom_smooth(colour="black", se=FALSE, linewidth=0.7)+
     ggplot2::ggtitle("(b) Teilhabe im formalen Kontext")+
     ggplot2::scale_x_continuous(name = "Theta", breaks = c(-2,-1,0,1,2))+
-    ggplot2::scale_y_continuous("", limits = c(0,1))+
+    ggplot2::scale_y_continuous("Standardfehler", limits = c(0,1))+
     apatheme+
     ggplot2::theme(plot.title = ggplot2::element_text(vjust = -0.2))
 
